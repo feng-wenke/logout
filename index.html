@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,29 +10,26 @@
             text-align: center;
             padding: 50px;
             position: relative;
-            /* 设置相对定位 */
         }
-        
+
         .message {
             position: relative;
-            /* 设置相对定位 */
-            z-index: 2;
-            /* 确保文字在图片上方 */
+            z-index: 10; /* 设置较高的z-index值 */
             margin-bottom: 20px;
             background-color: rgba(255, 255, 255, 0.8);
-            /* 为文字添加半透明背景 */
             padding: 10px;
-            /* 添加内边距 */
         }
         
         .logout-button {
-            font-size: 20px; /* 或者更大的字体大小 */
+            font-size: 20px;
             padding: 20px 40px;
             background-color: #dc3545;
             color: white;
             border: none;
             cursor: pointer;
             text-decoration: none;
+            position: relative; /* 添加定位 */
+            z-index: 10; /* 设置较高的z-index值 */
         }
         
         .logout-button:hover {
@@ -47,17 +43,16 @@
         .dark-theme {
             color: #1989ca;
         }
-        /* ... 其他样式保持不变 ... */
-
+        
         .fireworks {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh; /* 使用视口高度 */
-    overflow: hidden; /* 防止烟花溢出容器 */
-}
-
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 1; /* 设置较低的z-index值 */
+        }
         
         .firework {
             position: absolute;
@@ -84,6 +79,7 @@
             transform: translate(-50%, -50%) scale(0);
             animation: particleBurst 1.5s ease-out forwards;
         }
+        
         
         @keyframes burst {
             0% {
@@ -116,19 +112,20 @@
         }
     </style>
 </head>
-
 <body>
     <div class="fireworks"></div>
-    <!-- 添加烟花效果的容器 -->
     <div class="message">
         <h1>Are you sure you want to logout?</h1>
     </div>
     <button class="logout-button" id="logoutButton">Logout</button>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 设置页面主题
             var savedTheme = localStorage.getItem('theme') || 'light';
             document.body.className = savedTheme + '-theme';
 
+            // 烟花效果逻辑
             function createFirework() {
                 var firework = document.createElement('div');
                 firework.classList.add('firework');
@@ -147,26 +144,35 @@
 
             // 设置烟花密度更高，使整个屏幕充满烟花
             setInterval(createFirework, 50); // 更短的间隔时间，烟花更密集
-        });
 
-        // 生成随机颜色
-        function randomColor() {
-            var letters = '0123456789ABCDEF';
-            var color = '#';
-            for (var i = 0; i < 6; i++) {
-                color += letters[Math.floor(Math.random() * 16)];
+            // 生成随机颜色
+            function randomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
             }
-            return color;
-        }
 
-        document.getElementById('logoutButton').addEventListener('click', function() {
-            sessionStorage.clear();
-            document.cookie.split(";").forEach(function(c) {
-                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            // 注销按钮点击事件
+            document.getElementById('logoutButton').addEventListener('click', function() {
+                // 清除sessionStorage
+                sessionStorage.clear();
+
+                // 清除cookies
+                var cookies = document.cookie.split(";");
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    var eqPos = cookie.indexOf("=");
+                    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                }
+
+                // 重定向到登录页面，确保路径正确
+                window.location.href = 'https://feng-wenke.github.io/login/'; // 替换为实际的登录页面路径
             });
-            window.location.href = 'https://feng-wenke.github.io/login/';
         });
     </script>
 </body>
-
 </html>
